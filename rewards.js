@@ -72,7 +72,13 @@ function loadRewardData() {
     
     // Update UI with reward data
     document.getElementById('coinBalance').textContent = rewardData.coins;
-    document.getElementById('timeBalance').textContent = rewardData.timeEarned;
+    
+    // Display time earned in minutes and seconds format - handle fractional minutes precisely
+    const timeEarned = rewardData.timeEarned || 0;
+    const totalSeconds = Math.round(timeEarned * 60); // Convert minutes to seconds, rounding to nearest second
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    document.getElementById('timeBalance').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
     
     // Update progress bar
     updateNextRewardProgress();

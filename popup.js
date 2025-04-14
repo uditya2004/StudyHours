@@ -70,20 +70,28 @@ function startFullBlockFocus() {
 // Stop full block focus timer
 function stopFullBlockFocus() {
   // Get the current time data
-  chrome.storage.local.get(['fullBlockActive', 'fullBlockStartTime', 'focusTime'], function(result) {
+  chrome.storage.local.get(['fullBlockActive', 'fullBlockStartTime', 'focusTime', 'rewardData'], function(result) {
     if (result.fullBlockActive) {
       // Calculate elapsed minutes and add them to focusTime
       const startTime = result.fullBlockStartTime || Date.now();
       const elapsedMs = Date.now() - startTime;
       const elapsedMinutes = Math.floor(elapsedMs / 60000);
+      const elapsedSeconds = Math.floor((elapsedMs % 60000) / 1000);
       
       // Update focus time tracking
       const updatedFocusTime = (result.focusTime || 0) + elapsedMinutes;
       
+      // Also update rewardData.timeEarned to display in rewards page
+      const rewardData = result.rewardData || { coins: 0, timeEarned: 0, lastClaim: null };
+      // Convert minutes to include fractional part for seconds
+      const timeEarnedMinutes = elapsedMinutes + (elapsedSeconds / 60);
+      rewardData.timeEarned = (rewardData.timeEarned || 0) + timeEarnedMinutes;
+      
       // Save the updated time and set active state to false
       chrome.storage.local.set({
         fullBlockActive: false,
-        focusTime: updatedFocusTime
+        focusTime: updatedFocusTime,
+        rewardData: rewardData
       }, function() {
         // Update UI
         document.getElementById("start-full-block").disabled = false;
