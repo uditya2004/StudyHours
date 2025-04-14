@@ -134,6 +134,70 @@ body {
   font-size: 14px;
 }
 
+.website-stats-container {
+  margin-bottom: 20px;
+}
+
+.website-stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  background-color: var(--light-gray);
+  border-radius: 8px;
+  transition: transform 0.2s;
+}
+
+.website-stat-item:hover {
+  transform: translateX(5px);
+  background-color: #e8f0f8;
+}
+
+.website-name {
+  font-weight: 600;
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
+}
+
+.website-name i {
+  margin-right: 8px;
+  color: var(--accent-color);
+}
+
+.website-metrics {
+  display: flex;
+  gap: 15px;
+}
+
+.website-metric {
+  text-align: right;
+}
+
+.metric-value {
+  font-weight: bold;
+  color: var(--secondary-color);
+}
+
+.metric-label {
+  font-size: 12px;
+  color: #666;
+  text-transform: uppercase;
+}
+
+.no-data-message {
+  text-align: center;
+  color: #666;
+  padding: 20px;
+}
+
+.loading-message {
+  text-align: center;
+  color: #666;
+  padding: 20px;
+}
+
 .footer {
   text-align: center;
   margin-top: 40px;
