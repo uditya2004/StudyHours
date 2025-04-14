@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SocialTimeout Rewards</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <link rel="stylesheet" href="rewards.css">
+  <meta charset="UTF-8">
+  <!-- Add Canvas Confetti library for reward animations -->
+  <script src="confetti.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1><i class="fas fa-coins"></i> SocialTimeout Rewards</h1>
+      <p>Earn coins through focus time, spend them for breaks on your favorite sites!</p>
+    </div>
+    
+    <div class="card">
+      <div class="card-header">
+        <h2>Your Balance</h2>
+      </div>
+      <div class="balance-container">
+        <div class="coin-balance">
+          <i class="fas fa-coins balance-icon"></i>
+          <div id="coinBalance" class="balance-number">0</div>
+          <div class="balance-label">Coins Available</div>
+        </div>
+        <div class="time-balance">
+          <i class="fas fa-hourglass-half balance-icon"></i>
+          <div id="timeBalance" class="balance-number">0</div>
+          <div class="balance-label">Minutes Earned</div>
+        </div>
+      </div>
+      <!-- Add new progress indicator for next reward -->
+      <div class="next-reward-container">
+        <div class="progress-label">Progress to next reward:</div>
+        <div class="progress-bar-container">
+          <div id="nextRewardProgress" class="progress-bar" style="width: 0%"></div>
+        </div>
+        <div id="nextRewardText" class="progress-text">0/20 minutes</div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-header">
+        <h2>Earn Coins</h2>
+        <span>Focus to earn rewards</span>
+      </div>
+      <div class="earning-rates">
+        <div class="rate-card">
+          <div class="rate-header">Exchange Rate</div>
+          <div class="rate-content">
+            <i class="fas fa-clock"></i>
+            <span>20 minutes of focus time</span>
+            <i class="fas fa-equals"></i>
+            <i class="fas fa-coins"></i>
+            <span>10 coins</span>
+          </div>
+        </div>
+        <div class="focus-stats">
+          <div class="stat-row">
+            <div class="stat-label">Total Focus Time:</div>
+            <div id="totalFocusTime" class="stat-value">0 minutes</div>
+          </div>
+          <div class="stat-row">
+            <div class="stat-label">Today's Focus Time:</div>
+            <div id="todayFocusTime" class="stat-value">0 minutes</div>
+          </div>
+          <div class="stat-row">
+            <div class="stat-label">Focus Streak:</div>
+            <div id="focusStreak" class="stat-value">0 days</div>
+          </div>
+        </div>
+        <button id="claimCoinsBtn" class="action-button">
+          <i class="fas fa-coins"></i> Claim Available Coins
+        </button>
+      </div>
+    </div>
+    
+    <!-- Add new achievements section -->
+    <div class="card achievements-card">
+      <div class="card-header">
+        <h2>Achievements</h2>
+        <span>Unlock rewards by reaching milestones</span>
+      </div>
+      <div class="achievements-container" id="achievementsContainer">
+        <!-- Achievements will be added dynamically -->
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-header">
+        <h2>Spend Coins</h2>
+        <span>Redeem for browsing time on blocked sites</span>
+      </div>
+      <div class="site-selection">
+        <div class="site-select-label">Select a site to spend coins on:</div>
+        <select id="siteSelector" class="site-dropdown">
+          <option value="" disabled selected>Choose a blocked site</option>
+          <!-- Options will be populated dynamically -->
+        </select>
+      </div>
+      <div class="redemption-options">
+        <div class="redemption-header">Redemption Options</div>
+        <div class="redemption-container" id="redemptionOptions">
+          <div class="redemption-option">
+            <div class="option-details">
+              <div class="option-time">5 minutes</div>
+              <div class="option-cost">10 coins</div>
+            </div>
+            <button class="redeem-button" data-time="5" data-cost="10">
+              Redeem
+            </button>
+          </div>
+          <div class="redemption-option">
+            <div class="option-details">
+              <div class="option-time">15 minutes</div>
+              <div class="option-cost">25 coins</div>
+            </div>
+            <button class="redeem-button" data-time="15" data-cost="25">
+              Redeem
+            </button>
+          </div>
+          <div class="redemption-option">
+            <div class="option-details">
+              <div class="option-time">30 minutes</div>
+              <div class="option-cost">45 coins</div>
+            </div>
+            <button class="redeem-button" data-time="30" data-cost="45">
+              Redeem
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-header">
+        <h2>Transaction History</h2>
+      </div>
+      <div class="transaction-history" id="transactionHistory">
+        <div class="no-transactions">No transactions yet</div>
+        <!-- Transactions will be inserted here dynamically -->
+      </div>
+    </div>
+    
+    <div class="navigation-buttons">
+      <button id="backToReportBtn" class="nav-button">
+        <i class="fas fa-chart-bar"></i> Back to Report
+      </button>
+      <button id="backToHomeBtn" class="nav-button">
+        <i class="fas fa-home"></i> Back to Home
+      </button>
+    </div>
+
+    <div class="footer">
+      <p>SocialTimeout &copy; 2025 | Your social media wellness companion</p>
+    </div>
+  </div>
+  
+  <!-- Tooltip system container -->
+  <div id="tooltip" class="tooltip">
+    <div class="tooltip-content"></div>
+  </div>
+  
+  <script src="rewards.js"></script>
+</body>
+</html>

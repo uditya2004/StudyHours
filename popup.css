@@ -61,3 +61,70 @@ button {
   margin-top: 5px;
   background-color: #2196F3;
 }
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.action-buttons button {
+  flex: 1;
+  margin-top: 0;
+}
+
+#openReport {
+  background-color: #4CAF50;
+}
+
+.rewards-button {
+  background-color: #ff9800;
+  font-weight: bold;
+}
+
+/* Full Block Mode Controls */
+.full-block-controls {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.control-button {
+  flex: 1;
+  margin-top: 0;
+  height: 40px;
+  font-weight: bold;
+}
+
+.start-button {
+  background-color: #4CAF50; /* Green */
+}
+
+.stop-button {
+  background-color: #f44336; /* Red */
+}
+
+.stop-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.focus-status {
+  width: 100%;
+  text-align: center;
+  margin-top: 10px;
+  font-size: 13px;
+  font-weight: bold;
+  color: #555;
+  padding: 5px;
+  background-color: #ffffff;
+  border-radius: 3px;
+}
+
+/* Show focus controls only when Full Block is selected */
+.full-block-controls.hidden {
+  display: none;
+}

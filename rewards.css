@@ -1,0 +1,677 @@
+/* Rewards Page Styles - Premium UI Update */
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f0f2f5;
+  color: #333;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  text-align: center;
+  padding: 20px 0 30px;
+}
+
+.header h1 {
+  font-size: 2.2rem;
+  margin-bottom: 8px;
+  color: #1e40af;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.header p {
+  font-size: 1rem;
+  color: #64748b;
+  margin-top: 0;
+  font-weight: 400;
+}
+
+.card {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  margin-bottom: 24px;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.card-header {
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+  color: white;
+  padding: 16px 20px;
+  position: relative;
+}
+
+.card-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.card-header span {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+/* Balance Section */
+.balance-container {
+  display: flex;
+  justify-content: space-around;
+  padding: 30px 20px;
+  text-align: center;
+}
+
+.coin-balance, .time-balance {
+  flex: 1;
+  padding: 0 20px;
+}
+
+.balance-icon {
+  font-size: 2.4rem;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #f97316 0%, #fdba74 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.time-balance .balance-icon {
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.balance-number {
+  font-size: 2.6rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+  letter-spacing: -0.5px;
+}
+
+.coin-balance .balance-number {
+  color: #f97316;
+}
+
+.time-balance .balance-number {
+  color: #3b82f6;
+}
+
+.balance-label {
+  font-size: 0.9rem;
+  color: #64748b;
+  font-weight: 400;
+}
+
+/* Next Reward Progress Bar */
+.next-reward-container {
+  padding: 0 25px 25px;
+}
+
+.progress-label {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.progress-bar-container {
+  height: 8px;
+  background-color: #f1f5f9;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(to right, #3b82f6, #1e40af);
+  transition: width 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  border-radius: 4px;
+}
+
+.progress-text {
+  text-align: right;
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+/* Earning Rates Section */
+.earning-rates {
+  padding: 20px;
+}
+
+.rate-card {
+  background-color: #f8fafc;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+  border-left: 4px solid #3b82f6;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.rate-header {
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #334155;
+  font-size: 0.9rem;
+}
+
+.rate-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 0.95rem;
+}
+
+.rate-content i {
+  color: #3b82f6;
+}
+
+.focus-stats {
+  margin: 20px 0;
+  background-color: #f8fafc;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 0.95rem;
+}
+
+.stat-row:last-child {
+  border-bottom: none;
+}
+
+.stat-label {
+  font-weight: 500;
+  color: #334155;
+}
+
+.stat-value {
+  font-weight: 600;
+  color: #3b82f6;
+}
+
+.action-button {
+  background: linear-gradient(to right, #f97316, #fb923c);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: block;
+  width: 100%;
+  margin-top: 20px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 10px rgba(249, 115, 22, 0.25);
+}
+
+.action-button:hover {
+  background: linear-gradient(to right, #ea580c, #f97316);
+  box-shadow: 0 5px 15px rgba(249, 115, 22, 0.3);
+}
+
+.action-button:disabled {
+  background: linear-gradient(to right, #cbd5e1, #94a3b8);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  opacity: 0.7;
+}
+
+.action-button i {
+  margin-right: 8px;
+}
+
+/* Achievements Section */
+.achievements-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 15px;
+  padding: 20px;
+  justify-content: center;
+}
+
+.achievement {
+  position: relative;
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.achievement:hover {
+  transform: translateY(-3px);
+}
+
+.achievement-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 8px;
+  position: relative;
+  border: 2px solid #e2e8f0;
+  transition: all 0.2s ease;
+}
+
+.achievement-icon i {
+  font-size: 24px;
+  color: #94a3b8;
+  transition: all 0.2s ease;
+}
+
+.achievement.unlocked .achievement-icon {
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+  border-color: #1e40af;
+}
+
+.achievement.unlocked .achievement-icon i {
+  color: white;
+}
+
+.achievement-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 3px;
+  transition: all 0.2s ease;
+}
+
+.achievement.unlocked .achievement-title {
+  color: #3b82f6;
+}
+
+.achievement-progress {
+  font-size: 0.7rem;
+  color: #94a3b8;
+}
+
+.achievement-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #f97316;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: bold;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.achievement-date {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  display: none;
+}
+
+.achievement.unlocked .achievement-date {
+  display: block;
+}
+
+.achievement.unlocked .achievement-progress {
+  display: none;
+}
+
+/* Tooltip System */
+.tooltip {
+  position: absolute;
+  background-color: #1e293b;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  max-width: 220px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+  text-align: center;
+}
+
+.tooltip:after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  margin-left: -4px;
+  border-width: 4px;
+  border-style: solid;
+  border-color: #1e293b transparent transparent transparent;
+}
+
+.has-tooltip {
+  cursor: help;
+  text-decoration: underline dotted;
+  text-underline-offset: 2px;
+}
+
+/* Spend Coins Section */
+.site-selection {
+  padding: 20px 20px 12px;
+}
+
+.site-select-label {
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #334155;
+  font-size: 0.9rem;
+}
+
+.site-dropdown {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  color: #334155;
+  background-color: #f8fafc;
+  transition: all 0.2s ease;
+}
+
+.site-dropdown:hover {
+  border-color: #cbd5e1;
+}
+
+.site-dropdown:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.redemption-options {
+  padding: 12px 20px 20px;
+}
+
+.redemption-header {
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #334155;
+  font-size: 0.9rem;
+}
+
+.redemption-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.redemption-option {
+  background-color: #f8fafc;
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s ease;
+  border: 1px solid #e2e8f0;
+}
+
+.redemption-option:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.06);
+  border-color: #bfdbfe;
+}
+
+.option-details {
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.option-time {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #3b82f6;
+  margin-bottom: 6px;
+}
+
+.option-cost {
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.redeem-button {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 3px 8px rgba(59, 130, 246, 0.2);
+}
+
+.redeem-button:hover {
+  background-color: #2563eb;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.redeem-button:disabled {
+  background-color: #cbd5e1;
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Transaction History */
+.transaction-history {
+  padding: 20px;
+  max-height: 300px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.transaction-history::-webkit-scrollbar {
+  width: 4px;
+}
+
+.transaction-history::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 2px;
+}
+
+.transaction-history::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+.transaction-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid #e2e8f0;
+  transition: background-color 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.transaction-item:hover {
+  background-color: #f8fafc;
+}
+
+.transaction-item:last-child {
+  border-bottom: none;
+}
+
+.transaction-type {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.transaction-type i {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.transaction-type.earned i {
+  color: #22c55e;
+  background-color: rgba(34, 197, 94, 0.1);
+}
+
+.transaction-type.spent i {
+  color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.transaction-amount {
+  font-weight: 600;
+  padding: 0 16px;
+  min-width: 70px;
+  text-align: right;
+}
+
+.transaction-amount.earned {
+  color: #22c55e;
+}
+
+.transaction-amount.spent {
+  color: #ef4444;
+}
+
+.transaction-time {
+  color: #94a3b8;
+  font-size: 0.8rem;
+  min-width: 140px;
+  text-align: right;
+}
+
+.no-transactions {
+  text-align: center;
+  color: #94a3b8;
+  padding: 25px;
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+/* Animation effects */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.pulse {
+  animation: pulse 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Navigation Buttons */
+.navigation-buttons {
+  display: flex;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.nav-button {
+  flex: 1;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 3px 8px rgba(59, 130, 246, 0.2);
+}
+
+.nav-button:hover {
+  background-color: #2563eb;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  color: #94a3b8;
+  margin-top: 40px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+  font-size: 0.8rem;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .balance-container {
+    flex-direction: column;
+    gap: 24px;
+  }
+  
+  .redemption-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .navigation-buttons {
+    flex-direction: column;
+  }
+  
+  .achievements-container {
+    justify-content: space-around;
+  }
+  
+  .transaction-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .transaction-amount, .transaction-time {
+    text-align: left;
+    padding: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .card-header {
+    padding: 12px 16px;
+  }
+  
+  .balance-number {
+    font-size: 2.2rem;
+  }
+  
+  .header h1 {
+    font-size: 1.8rem;
+  }
+}

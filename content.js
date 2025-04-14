@@ -4,6 +4,8 @@ let currentDomain = window.location.hostname;
 let timer = null;
 let extensionContextValid = true;
 let blockingTimer = null; // Timer for blocking feature
+let fullBlockModeActive = false; // Track if Full block mode is active
+let focusTrackingTimer = null; // Timer for tracking full block focus time
 
 // Function to get today's date - called when needed rather than once at load time
 function getTodayDate() {
@@ -61,6 +63,11 @@ function handleExtensionError(error) {
         blockingTimer = null;
       }
       
+      if (focusTrackingTimer) {
+        clearInterval(focusTrackingTimer);
+        focusTrackingTimer = null;
+      }
+      
       // Remove event listeners
       document.removeEventListener("scroll", scrollHandler);
     }
@@ -73,11 +80,16 @@ function handleExtensionError(error) {
 function initializeData() {
   if (!extensionContextValid) return;
   
-  safeStorageGet(['scrollTime', 'scrollCount', 'websiteData', 'dailyData'], (result) => {
+  safeStorageGet(['scrollTime', 'scrollCount', 'websiteData', 'dailyData', 'fullBlockActive'], (result) => {
     if (!result) return;
     
     scrollTime = result.scrollTime || 0;
     scrollCount = result.scrollCount || 0;
+    
+    // Check if full block mode is active and start tracking if it is
+    if (result.fullBlockActive) {
+      startFocusTimeTracking();
+    }
     
     const today = getTodayDate();
     
@@ -103,7 +115,7 @@ function initializeData() {
   });
 }
 
-// Start the timer for tracking time spent
+// Start the timer for tracking time spent on websites
 function startTimer() {
   if (!extensionContextValid) return;
   
@@ -123,7 +135,7 @@ function startTimer() {
       const today = getTodayDate();
       
       // Update all data in a single storage operation to reduce potential for errors
-      safeStorageGet(['scrollTime', 'websiteData', 'dailyData'], (result) => {
+      safeStorageGet(['scrollTime', 'websiteData', 'dailyData', 'focusTime'], (result) => {
         if (!result) return;
         
         // Prepare all updates
@@ -144,6 +156,8 @@ function startTimer() {
         if (!dailyData[today]) {
           dailyData[today] = { scrolls: 0, minutes: 0 };
         }
+        
+        // Update daily minutes
         dailyData[today].minutes = (dailyData[today].minutes || 0) + 1;
         updatedData.dailyData = dailyData;
         
@@ -161,6 +175,75 @@ function startTimer() {
       timer = null;
     }
   }, 60000);
+}
+
+// Start tracking focus time for full block mode, works independently of site visits
+function startFocusTimeTracking() {
+  if (!extensionContextValid) return;
+  
+  // Clear any existing timer
+  if (focusTrackingTimer) {
+    clearInterval(focusTrackingTimer);
+  }
+  
+  console.log("SocialTimeout: Starting focus time tracking for full block mode");
+  
+  // Set up a new timer to increment focus time every minute
+  focusTrackingTimer = setInterval(() => {
+    if (!extensionContextValid) {
+      clearInterval(focusTrackingTimer);
+      focusTrackingTimer = null;
+      return;
+    }
+    
+    try {
+      const today = getTodayDate();
+      
+      // Update focus time in storage
+      safeStorageGet(['focusTime', 'dailyData', 'fullBlockActive'], (result) => {
+        if (!result || !result.fullBlockActive) {
+          // If full block mode is no longer active, stop tracking
+          clearInterval(focusTrackingTimer);
+          focusTrackingTimer = null;
+          return;
+        }
+        
+        // Prepare all updates
+        const updatedData = {
+          focusTime: (result.focusTime || 0) + 1
+        };
+        
+        // Update daily data
+        const dailyData = result.dailyData || {};
+        if (!dailyData[today]) {
+          dailyData[today] = { scrolls: 0, minutes: 0 };
+        }
+        
+        // Update daily minutes for consistency
+        dailyData[today].minutes = (dailyData[today].minutes || 0) + 1;
+        updatedData.dailyData = dailyData;
+        
+        // Save everything in one operation
+        safeStorageSet(updatedData);
+        
+        console.log("SocialTimeout: Incremented focus time for full block mode");
+      });
+    } catch (error) {
+      handleExtensionError(error);
+      // If we encounter an error, clear the interval to prevent repeated errors
+      clearInterval(focusTrackingTimer);
+      focusTrackingTimer = null;
+    }
+  }, 60000); // Update every minute
+}
+
+// Stop tracking focus time
+function stopFocusTimeTracking() {
+  if (focusTrackingTimer) {
+    clearInterval(focusTrackingTimer);
+    focusTrackingTimer = null;
+    console.log("SocialTimeout: Stopped focus time tracking");
+  }
 }
 
 // Scroll handler function to be used with event listener
@@ -237,7 +320,7 @@ function checkIfSiteBlocked() {
     const baseDomain = extractBaseDomain(currentDomain);
     console.log(`SocialTimeout: Checking if site should be blocked. Current domain: ${currentDomain}, Base domain: ${baseDomain}`);
     
-    safeStorageGet(['blockingSettings'], (result) => {
+    safeStorageGet(['blockingSettings', 'siteAllowances'], (result) => {
       if (!result || !result.blockingSettings) {
         console.log('SocialTimeout: No blocking settings found in storage');
         return;
@@ -283,48 +366,33 @@ function checkIfSiteBlocked() {
       
       if (shouldBlock) {
         console.log(`SocialTimeout: Blocking site: ${currentDomain} (matched with ${matchedSite}). Mode: ${settings.mode}`);
-        if (settings.mode === 'full') {
-          console.log('SocialTimeout: Applying full block');
-          blockSite('This site has been blocked by Social Timeout.');
-        } else if (settings.mode === 'timer') {
-          // Timer block mode - START TIMER IMMEDIATELY
-          const timeInMs = (settings.time || 30) * 60 * 1000; // Convert minutes to milliseconds
-          console.log(`SocialTimeout: Setting timer block for ${settings.time} minutes`);
+        
+        // Check if user has an allowance for this site from reward redemption
+        const siteAllowances = result.siteAllowances || {};
+        if (siteAllowances[matchedSite]) {
+          const allowance = siteAllowances[matchedSite];
           
-          // Show an immediate notification that the timer has started
-          const timerStartNotification = () => {
-            if (document.body) {
-              const notification = document.createElement('div');
-              notification.style.cssText = `
-                position: fixed; top: 20px; right: 20px; background-color: #e74c3c;
-                color: white; padding: 10px 15px; border-radius: 5px; z-index: 9999;
-                font-family: Arial, sans-serif; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-              `;
-              notification.textContent = `Timer started: ${settings.time} minutes until this site is blocked.`;
-              document.body.appendChild(notification);
-              
-              // Remove the notification after 5 seconds
-              setTimeout(() => {
-                notification.style.opacity = '0';
-                notification.style.transition = 'opacity 0.5s';
-                setTimeout(() => notification.remove(), 500);
-              }, 5000);
-            }
-          };
-          
-          // Show notification when body is available
-          if (document.body) {
-            timerStartNotification();
+          // Check if allowance is expired
+          const expiryTime = new Date(allowance.expiryTime).getTime();
+          if (expiryTime < Date.now()) {
+            // Allowance expired, proceed with normal blocking
+            console.log('SocialTimeout: Site allowance found but expired');
+            applyBlockingRules(settings, matchedSite);
+          } else if (allowance.minutes > 0) {
+            // User has a valid allowance, show a notification instead of blocking
+            console.log(`SocialTimeout: User has a valid allowance of ${allowance.minutes} minutes for this site`);
+            showAllowanceNotification(allowance.minutes, matchedSite);
+            
+            // Start a timer to decrease the allowance and track usage
+            trackAllowanceUsage(matchedSite);
           } else {
-            document.addEventListener("DOMContentLoaded", timerStartNotification);
+            // Allowance minutes are used up, proceed with normal blocking
+            console.log('SocialTimeout: Site allowance found but minutes used up');
+            applyBlockingRules(settings, matchedSite);
           }
-          
-          // Set the timer to block the site
-          blockingTimer = setTimeout(() => {
-            if (extensionContextValid) {
-              blockSite(`Your time limit of ${settings.time} minutes on this site has been reached.`);
-            }
-          }, timeInMs);
+        } else {
+          // No allowance found, proceed with normal blocking
+          applyBlockingRules(settings, matchedSite);
         }
       } else {
         console.log(`SocialTimeout: Site ${currentDomain} is not blocked`);
@@ -430,6 +498,159 @@ function blockSite(message) {
   }
 }
 
+// Apply blocking rules based on settings
+function applyBlockingRules(settings, matchedSite) {
+  if (settings.mode === 'full') {
+    console.log('SocialTimeout: Applying full block');
+    fullBlockModeActive = true; // Set full block mode active flag
+    blockSite('This site has been blocked by Social Timeout.');
+  } else if (settings.mode === 'timer') {
+    // Timer block mode - START TIMER IMMEDIATELY
+    const timeInMs = (settings.time || 30) * 60 * 1000; // Convert minutes to milliseconds
+    console.log(`SocialTimeout: Setting timer block for ${settings.time} minutes`);
+    
+    // Show an immediate notification that the timer has started
+    const timerStartNotification = () => {
+      if (document.body) {
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+          position: fixed; top: 20px; right: 20px; background-color: #e74c3c;
+          color: white; padding: 10px 15px; border-radius: 5px; z-index: 9999;
+          font-family: Arial, sans-serif; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        `;
+        notification.textContent = `Timer started: ${settings.time} minutes until this site is blocked.`;
+        document.body.appendChild(notification);
+        
+        // Remove the notification after 5 seconds
+        setTimeout(() => {
+          notification.style.opacity = '0';
+          notification.style.transition = 'opacity 0.5s';
+          setTimeout(() => notification.remove(), 500);
+        }, 5000);
+      }
+    };
+    
+    // Show notification when body is available
+    if (document.body) {
+      timerStartNotification();
+    } else {
+      document.addEventListener("DOMContentLoaded", timerStartNotification);
+    }
+    
+    // Set the timer to block the site
+    blockingTimer = setTimeout(() => {
+      if (extensionContextValid) {
+        blockSite(`Your time limit of ${settings.time} minutes on this site has been reached.`);
+      }
+    }, timeInMs);
+  }
+}
+
+// Show notification about allowance
+function showAllowanceNotification(minutes, site) {
+  if (!document.body) {
+    // Wait for the body to be available
+    document.addEventListener("DOMContentLoaded", () => {
+      showAllowanceNotification(minutes, site);
+    });
+    return;
+  }
+  
+  const notification = document.createElement('div');
+  notification.style.cssText = `
+    position: fixed; top: 20px; right: 20px; background-color: #2ecc71;
+    color: white; padding: 15px 20px; border-radius: 5px; z-index: 9999;
+    font-family: Arial, sans-serif; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  `;
+  notification.innerHTML = `
+    <div style="font-weight: bold; margin-bottom: 5px;">Reward Time Active</div>
+    <div>You have ${minutes} minutes to browse ${site.replace(/^www\./, '')}.</div>
+    <div style="font-size: 0.8em; margin-top: 5px;">Earned with SocialTimeout Rewards</div>
+  `;
+  document.body.appendChild(notification);
+  
+  // Remove the notification after 8 seconds
+  setTimeout(() => {
+    notification.style.opacity = '0';
+    notification.style.transition = 'opacity 0.5s';
+    setTimeout(() => notification.remove(), 500);
+  }, 8000);
+}
+
+// Track allowance usage
+function trackAllowanceUsage(site) {
+  // Set up a timer to decrease the allowance every minute
+  const allowanceTimer = setInterval(() => {
+    if (!extensionContextValid) {
+      clearInterval(allowanceTimer);
+      return;
+    }
+    
+    safeStorageGet(['siteAllowances'], (result) => {
+      if (!result || !result.siteAllowances || !result.siteAllowances[site]) {
+        clearInterval(allowanceTimer);
+        return;
+      }
+      
+      const siteAllowances = result.siteAllowances;
+      const allowance = siteAllowances[site];
+      
+      // Decrease allowance by 1 minute
+      allowance.minutes -= 1;
+      
+      // Update storage
+      safeStorageSet({ siteAllowances }, () => {
+        // If allowance is used up, show notification and reload the page to apply block
+        if (allowance.minutes <= 0) {
+          clearInterval(allowanceTimer);
+          
+          // Show notification
+          const notification = document.createElement('div');
+          notification.style.cssText = `
+            position: fixed; top: 20px; right: 20px; background-color: #e74c3c;
+            color: white; padding: 15px 20px; border-radius: 5px; z-index: 9999;
+            font-family: Arial, sans-serif; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+          `;
+          notification.innerHTML = `
+            <div style="font-weight: bold; margin-bottom: 5px;">Reward Time Expired</div>
+            <div>Your browsing time on ${site.replace(/^www\./, '')} has ended.</div>
+            <div style="font-size: 0.8em; margin-top: 5px;">Page will reload in 10 seconds.</div>
+          `;
+          document.body.appendChild(notification);
+          
+          // Reload the page after 10 seconds to apply block
+          setTimeout(() => {
+            window.location.reload();
+          }, 10000);
+        }
+        
+        // If 1 minute left, show warning
+        if (allowance.minutes === 1) {
+          const warningNotification = document.createElement('div');
+          warningNotification.style.cssText = `
+            position: fixed; top: 20px; right: 20px; background-color: #f39c12;
+            color: white; padding: 15px 20px; border-radius: 5px; z-index: 9999;
+            font-family: Arial, sans-serif; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+          `;
+          warningNotification.innerHTML = `
+            <div style="font-weight: bold; margin-bottom: 5px;">Almost Time Up!</div>
+            <div>You have 1 minute left on ${site.replace(/^www\./, '')}.</div>
+            <div style="font-size: 0.8em; margin-top: 5px;">Visit SocialTimeout Rewards for more time.</div>
+          `;
+          document.body.appendChild(warningNotification);
+          
+          // Remove the warning after 5 seconds
+          setTimeout(() => {
+            warningNotification.style.opacity = '0';
+            warningNotification.style.transition = 'opacity 0.5s';
+            setTimeout(() => warningNotification.remove(), 500);
+          }, 5000);
+        }
+      });
+    });
+  }, 60000); // Check every minute
+}
+
 // Check extension context validity
 function checkExtensionContext() {
   try {
@@ -448,10 +669,38 @@ function setupScrollListener() {
   document.addEventListener("scroll", scrollHandler);
 }
 
+// Listen for messages from popup.js
+chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+  if (message && message.action === "startFocusTracking") {
+    console.log("SocialTimeout: Got message to start focus tracking");
+    startFocusTimeTracking();
+    sendResponse({status: "Focus tracking started"});
+    return true;
+  }
+  else if (message && message.action === "stopFocusTracking") {
+    console.log("SocialTimeout: Got message to stop focus tracking");
+    stopFocusTimeTracking();
+    sendResponse({status: "Focus tracking stopped", minutesEarned: message.minutesEarned});
+    return true;
+  }
+  else if (message && message.action === "ping") {
+    sendResponse({status: "alive"});
+    return true;
+  }
+});
+
 // Initialize extension functionality with error handling
 try {
   extensionContextValid = checkExtensionContext();
   if (extensionContextValid) {
+    // Check if full block mode is active and if so, start tracking focus time
+    safeStorageGet(['fullBlockActive'], (result) => {
+      if (result && result.fullBlockActive) {
+        console.log("SocialTimeout: Found active full block mode on load, starting focus tracking");
+        startFocusTimeTracking();
+      }
+    });
+    
     // Always check if site should be blocked immediately
     checkIfSiteBlocked();
     
@@ -464,7 +713,6 @@ try {
         startTimer();
         setupScrollListener();
         checkNegativeWords();
-        // Removed second checkIfSiteBlocked() call that was causing duplicate popup
       });
     } else {
       // DOM already ready, initialize immediately
@@ -473,19 +721,8 @@ try {
       startTimer();
       setupScrollListener();
       checkNegativeWords();
-      // No need to call checkIfSiteBlocked() again here
     }
   }
 } catch (error) {
   handleExtensionError(error);
-}
-
-// Listen for context invalidation
-if (chrome.runtime && chrome.runtime.onMessage) {
-  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message && message.action === "ping") {
-      sendResponse({status: "alive"});
-      return true;
-    }
-  });
 }
