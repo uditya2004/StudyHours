@@ -287,18 +287,37 @@ function checkIfSiteBlocked() {
           console.log('SocialTimeout: Applying full block');
           blockSite('This site has been blocked by Social Timeout.');
         } else if (settings.mode === 'timer') {
-          // Timer block mode
+          // Timer block mode - START TIMER IMMEDIATELY
           const timeInMs = (settings.time || 30) * 60 * 1000; // Convert minutes to milliseconds
           console.log(`SocialTimeout: Setting timer block for ${settings.time} minutes`);
           
-          // Set a warning that the site will be blocked soon
-          const warningTime = Math.min(timeInMs / 2, 5 * 60 * 1000); // Half time or 5 minutes, whichever is less
-          
-          setTimeout(() => {
-            if (extensionContextValid) {
-              alert(`You have ${Math.ceil(warningTime / 60000)} minutes left on ${currentDomain} before it's blocked.`);
+          // Show an immediate notification that the timer has started
+          const timerStartNotification = () => {
+            if (document.body) {
+              const notification = document.createElement('div');
+              notification.style.cssText = `
+                position: fixed; top: 20px; right: 20px; background-color: #e74c3c;
+                color: white; padding: 10px 15px; border-radius: 5px; z-index: 9999;
+                font-family: Arial, sans-serif; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+              `;
+              notification.textContent = `Timer started: ${settings.time} minutes until this site is blocked.`;
+              document.body.appendChild(notification);
+              
+              // Remove the notification after 5 seconds
+              setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transition = 'opacity 0.5s';
+                setTimeout(() => notification.remove(), 500);
+              }, 5000);
             }
-          }, timeInMs - warningTime);
+          };
+          
+          // Show notification when body is available
+          if (document.body) {
+            timerStartNotification();
+          } else {
+            document.addEventListener("DOMContentLoaded", timerStartNotification);
+          }
           
           // Set the timer to block the site
           blockingTimer = setTimeout(() => {
@@ -433,8 +452,10 @@ function setupScrollListener() {
 try {
   extensionContextValid = checkExtensionContext();
   if (extensionContextValid) {
-    // Handle initialization at document_start
-    // Some operations need the DOM to be loaded, so we'll check readyState
+    // Always check if site should be blocked immediately
+    checkIfSiteBlocked();
+    
+    // Handle other initialization tasks that may require the DOM to be loaded
     if (document.readyState === "loading") {
       console.log("SocialTimeout: Document still loading, waiting for DOM ready state");
       document.addEventListener("DOMContentLoaded", () => {
@@ -443,7 +464,7 @@ try {
         startTimer();
         setupScrollListener();
         checkNegativeWords();
-        checkIfSiteBlocked();
+        // Removed second checkIfSiteBlocked() call that was causing duplicate popup
       });
     } else {
       // DOM already ready, initialize immediately
@@ -452,7 +473,7 @@ try {
       startTimer();
       setupScrollListener();
       checkNegativeWords();
-      checkIfSiteBlocked();
+      // No need to call checkIfSiteBlocked() again here
     }
   }
 } catch (error) {
