@@ -1,0 +1,2 @@
+# StudyHours
+Chrome extension
