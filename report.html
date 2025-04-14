@@ -1,12 +1,76 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Your Usage Report</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SocialTimeout - Your Usage Report</title>
   <script src="chart.js"></script>
+  <link rel="stylesheet" href="report.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 <body>
-  <h2>Weekly Report</h2>
-  <canvas id="myChart" width="300" height="150"></canvas>
+  <div class="container">
+    <div class="header">
+      <h1>SocialTimeout Analytics</h1>
+      <p>Your personal social media usage report</p>
+    </div>
+    
+    <div class="date-display" id="reportDate"></div>
+    
+    <div class="card">
+      <div class="card-header">
+        <h2>Usage Summary</h2>
+        <span>This Week</span>
+      </div>
+      
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div><i class="fas fa-mouse"></i></div>
+          <div class="stat-number" id="scrollCountStat">0</div>
+          <div class="stat-label">Total Scrolls</div>
+        </div>
+        
+        <div class="stat-card">
+          <div><i class="fas fa-clock"></i></div>
+          <div class="stat-number" id="timeSpentStat">0</div>
+          <div class="stat-label">Minutes Spent</div>
+        </div>
+        
+        <div class="stat-card">
+          <div><i class="fas fa-bolt"></i></div>
+          <div class="stat-number" id="scrollRateStat">0</div>
+          <div class="stat-label">Scrolls/Minute</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-header">
+        <h2>Weekly Activity</h2>
+      </div>
+      
+      <div class="chart-container">
+        <canvas id="myChart"></canvas>
+      </div>
+      
+      <div class="insights">
+        <h3>Key Insights</h3>
+        <div class="insight-item">
+          <div class="insight-icon"><i class="fas fa-chart-line"></i></div>
+          <div id="insight1">Loading insights...</div>
+        </div>
+        <div class="insight-item">
+          <div class="insight-icon"><i class="fas fa-lightbulb"></i></div>
+          <div id="insight2">Loading insights...</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <p>SocialTimeout &copy; 2025 | Your social media wellness companion</p>
+    </div>
+  </div>
+  
   <script src="report.js"></script>
 </body>
 </html>
