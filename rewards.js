@@ -111,13 +111,19 @@ function updateNextRewardProgress() {
 
 // Load focus statistics
 function loadFocusStats() {
-  chrome.storage.local.get(['scrollTime', 'dailyData', 'focusTime'], function(result) {
+  chrome.storage.local.get(['scrollTime', 'dailyData', 'focusTime', 'rewardData'], function(result) {
     // Calculate total focus time - Now prioritizing focusTime (Full block mode time)
     const totalScrollTime = result.scrollTime || 0;
     const totalFullBlockTime = result.focusTime || 0;
     
-    // Display total time with priority on Full block mode time
-    document.getElementById('totalFocusTime').textContent = `${totalFullBlockTime} minutes`;
+    // Get the timeEarned value from rewardData for consistency
+    const rewardData = result.rewardData || { timeEarned: 0 };
+    
+    // Display total focus time using the timeEarned value for consistency with the Minutes:Seconds display
+    const totalSeconds = Math.round(rewardData.timeEarned * 60);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    document.getElementById('totalFocusTime').textContent = `${minutes} minutes ${seconds} seconds`;
     
     // Calculate today's focus time
     const today = new Date().toISOString().split('T')[0];
@@ -129,7 +135,7 @@ function loadFocusStats() {
     const streak = calculateFocusStreak(dailyData);
     document.getElementById('focusStreak').textContent = `${streak} days`;
     
-    // Update claim button state
+    // Update claim button state - use focusTime for unclaimed time calculation
     updateClaimButtonState(result.rewardData, totalFullBlockTime);
   });
 }
@@ -161,33 +167,25 @@ function calculateFocusStreak(dailyData) {
 // Update claim button state
 function updateClaimButtonState(rewardData, totalFocusTime) {
   const claimBtn = document.getElementById('claimCoinsBtn');
-  rewardData = rewardData || { lastClaim: null, lastClaimAmount: 0 };
+  rewardData = rewardData || { coins: 0, timeEarned: 0, lastClaim: null, lastClaimAmount: 0 };
   
-  chrome.storage.local.get(['scrollTime', 'focusTime'], function(result) {
-    const totalScrollTime = result.scrollTime || 0;
-    const totalFullBlockTime = result.focusTime || 0;
-    
-    // Now prioritize Full block mode time for rewards calculation
-    const totalTrackedTime = totalFullBlockTime;
-    
-    // Check if the user has unclaimed focus time
-    let unclaimedTime = totalTrackedTime;
-    
-    // If they've claimed before, subtract what they've already claimed
-    if (rewardData.lastClaimAmount) {
-      unclaimedTime -= rewardData.lastClaimAmount;
-    }
-    
-    // If there's unclaimed time, enable the button
-    if (unclaimedTime >= 20) { // 20 minutes is the minimum for a claim
-      claimBtn.disabled = false;
-      claimBtn.textContent = `Claim ${Math.floor(unclaimedTime / 20) * 10} Coins`;
-    } else {
-      claimBtn.disabled = true;
-      const minutesNeeded = 20 - unclaimedTime;
-      claimBtn.textContent = `Need ${minutesNeeded} more minutes of focus time`;
-    }
-  });
+  // Use rewardData.timeEarned directly for consistency with the Minutes:Seconds display
+  // Calculate how many full 20-minute blocks are available for claiming
+  const availableFullBlocks = Math.floor(rewardData.timeEarned / 20);
+  const coinsAvailable = availableFullBlocks * 10;
+  
+  // Calculate remaining minutes needed for next reward
+  const remainingForNextBlock = rewardData.timeEarned % 20;
+  const minutesNeeded = 20 - remainingForNextBlock;
+  
+  // If there are claimable coins, enable the button
+  if (availableFullBlocks > 0) {
+    claimBtn.disabled = false;
+    claimBtn.textContent = `Claim ${coinsAvailable} Coins`;
+  } else {
+    claimBtn.disabled = true;
+    claimBtn.textContent = `Need ${minutesNeeded.toFixed(1)} more minutes of focus time`;
+  }
 }
 
 // Load blocked sites
@@ -336,6 +334,11 @@ function redeemCoins(site, minutes, coinCost) {
     
     // Update coins balance
     rewardData.coins -= coinCost;
+    
+    // Also decrease the timeEarned based on the coins spent (10 coins = 20 minutes)
+    const minutesSpent = (coinCost / 10) * 20;
+    // Make sure we don't go below zero
+    rewardData.timeEarned = Math.max(0, (rewardData.timeEarned || 0) - minutesSpent);
     
     // Add transaction record
     if (!rewardData.transactions) {
