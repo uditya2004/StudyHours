@@ -207,6 +207,53 @@ body {
   font-size: 14px;
 }
 
+.reset-container {
+  text-align: center;
+  padding: 10px 20px;
+}
+
+.reset-button {
+  background-color: #da5762;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 24px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(218, 87, 98, 0.2);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 15px 0;
+}
+
+.reset-button:hover {
+  background-color: #c94550;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px rgba(218, 87, 98, 0.3);
+}
+
+.reset-button:active {
+  transform: translateY(0px);
+}
+
+.reset-button i {
+  font-size: 14px;
+}
+
+.reset-confirmation {
+  color: #4cb5ae;
+  font-weight: 500;
+  margin-top: 10px;
+  transition: opacity 0.3s ease;
+}
+
+.hidden {
+  opacity: 0;
+  display: none;
+}
+
 @media (max-width: 768px) {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);

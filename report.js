@@ -359,3 +359,158 @@ function generateInsights(totalScrolls, totalMinutes, scrollData, timeData, webs
   
   document.getElementById('insight2').textContent = insight2;
 }
+
+// Initialize reset button functionality
+document.addEventListener('DOMContentLoaded', () => {
+  const resetButton = document.getElementById('resetStatsBtn');
+  const resetConfirmation = document.getElementById('resetConfirmation');
+  
+  if (resetButton) {
+    resetButton.addEventListener('click', () => {
+      // Confirm before resetting
+      if (confirm('Are you sure you want to reset all statistics? This action cannot be undone.')) {
+        // Reset all statistics in Chrome storage
+        chrome.storage.local.set({
+          scrollCount: 0,
+          scrollTime: 0,
+          dailyData: {},
+          websiteData: {}
+        }, () => {
+          // Show confirmation message
+          resetConfirmation.classList.remove('hidden');
+          
+          // Update UI with zeros
+          document.getElementById('scrollCountStat').textContent = '0';
+          document.getElementById('timeSpentStat').textContent = '0';
+          document.getElementById('scrollRateStat').textContent = '0';
+          
+          // Clear website stats
+          const websiteStatsContainer = document.getElementById('websiteStatsContainer');
+          websiteStatsContainer.innerHTML = '<p class="no-data-message">No website data collected yet. Start browsing to see statistics!</p>';
+          
+          // Reset insights
+          document.getElementById('insight1').textContent = 'Not enough data to analyze your activity trends yet.';
+          document.getElementById('insight2').textContent = 'Start browsing to generate personalized insights.';
+          
+          // Reset charts - clear and recreate with empty data
+          if (window.websitePieChart) {
+            window.websitePieChart.destroy();
+          }
+          
+          if (window.activityChart) {
+            window.activityChart.destroy();
+          }
+          
+          // Create empty charts
+          createEmptyCharts();
+          
+          // Hide confirmation after 3 seconds
+          setTimeout(() => {
+            resetConfirmation.classList.add('hidden');
+          }, 3000);
+        });
+      }
+    });
+  }
+});
+
+// Function to create empty charts when no data is available
+function createEmptyCharts() {
+  // Empty weekly activity chart
+  const activityCtx = document.getElementById('myChart').getContext('2d');
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  
+  window.activityChart = new Chart(activityCtx, {
+    type: 'bar',
+    data: {
+      labels: days,
+      datasets: [
+        {
+          label: 'Scrolls',
+          data: [0, 0, 0, 0, 0, 0, 0],
+          backgroundColor: 'rgba(74, 111, 165, 0.7)',
+          borderColor: 'rgba(74, 111, 165, 1)',
+          borderWidth: 1
+        },
+        {
+          label: 'Minutes',
+          data: [0, 0, 0, 0, 0, 0, 0],
+          backgroundColor: 'rgba(76, 181, 174, 0.7)',
+          borderColor: 'rgba(76, 181, 174, 1)',
+          borderWidth: 1,
+          yAxisID: 'y1'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Scroll Count'
+          }
+        },
+        y1: {
+          beginAtZero: true,
+          position: 'right',
+          grid: {
+            drawOnChartArea: false,
+          },
+          title: {
+            display: true,
+            text: 'Minutes'
+          }
+        },
+        x: {
+          title: {
+            display: true,
+            text: 'Day'
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          position: 'top',
+        }
+      }
+    }
+  });
+  
+  // Empty website pie chart
+  const pieCtx = document.getElementById('websitePieChart').getContext('2d');
+  
+  window.websitePieChart = new Chart(pieCtx, {
+    type: 'pie',
+    data: {
+      labels: ['No Data'],
+      datasets: [{
+        data: [1],
+        backgroundColor: ['rgba(200, 200, 200, 0.7)'],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'right',
+        },
+        title: {
+          display: true,
+          text: 'Minutes Spent by Website'
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              return 'No data available';
+            }
+          }
+        }
+      }
+    }
+  });
+}
