@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Social Timeout",
+  "version": "1.0",
+  "description": "Helps improve your digital wellbeing while using social media",
+  "permissions": ["storage", "activeTab", "scripting"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.youtube.com/*", "*://*.instagram.com/*", "*://*.facebook.com/*"],
+      "js": ["content.js"]
+    }
+  ],
+  "icons": {
+    "48": "icon.png"
+  }
+}
