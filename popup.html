@@ -7,6 +7,37 @@
 <body>
   <h1>🕒 Social Timeout</h1>
   <p>We're helping you use social media mindfully!</p>
+  
+  <div class="blocking-controls">
+    <h2>Website Blocking</h2>
+    <div class="site-list">
+      <div class="site-item">
+        <label><input type="checkbox" id="block-facebook" data-site="facebook.com"> Facebook</label>
+      </div>
+      <div class="site-item">
+        <label><input type="checkbox" id="block-twitter" data-site="twitter.com,x.com"> Twitter/X</label>
+      </div>
+      <div class="site-item">
+        <label><input type="checkbox" id="block-instagram" data-site="instagram.com"> Instagram</label>
+      </div>
+      <div class="site-item">
+        <label><input type="checkbox" id="block-youtube" data-site="youtube.com"> YouTube</label>
+      </div>
+      <div class="site-item">
+        <label><input type="checkbox" id="block-linkedin" data-site="linkedin.com"> LinkedIn</label>
+      </div>
+    </div>
+    
+    <div class="blocking-options">
+      <select id="block-mode">
+        <option value="full">Full Block</option>
+        <option value="timer">Timer Block (minutes)</option>
+      </select>
+      <input type="number" id="block-time" min="1" max="120" value="30" class="hidden">
+      <button id="save-blocking">Save Settings</button>
+    </div>
+  </div>
+  
   <button id="openReport">View Report</button>
 
   <script src="popup.js"></script>

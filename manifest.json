@@ -3,7 +3,8 @@
   "name": "Social Timeout",
   "version": "1.0",
   "description": "Helps improve your digital wellbeing while using social media",
-  "permissions": ["storage", "activeTab", "scripting"],
+  "permissions": ["storage", "activeTab", "scripting", "webNavigation"],
+  "host_permissions": ["<all_urls>"],
   "action": {
     "default_popup": "popup.html",
     "default_icon": "icon.png"
@@ -11,7 +12,8 @@
   "content_scripts": [
     {
       "matches": ["*://*.youtube.com/*", "*://*.instagram.com/*", "*://*.facebook.com/*", "*://*.x.com/*", "*://*.twitter.com/*", "*://*.linkedin.com/*"],
-      "js": ["content.js"]
+      "js": ["content.js"],
+      "run_at": "document_start"
     }
   ],
   "icons": {

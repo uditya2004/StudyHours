@@ -1,10 +1,14 @@
 body {
   font-family: Arial;
   padding: 15px;
-  width: 200px;
+  width: 300px;
 }
 h1 {
   font-size: 16px;
+}
+h2 {
+  font-size: 14px;
+  margin-top: 15px;
 }
 button {
   background-color: #4CAF50;
@@ -13,4 +17,47 @@ button {
   border: none;
   cursor: pointer;
   width: 100%;
+  margin-top: 10px;
+}
+
+.blocking-controls {
+  background-color: #f5f5f5;
+  padding: 10px;
+  border-radius: 5px;
+  margin: 10px 0;
+}
+
+.site-list {
+  margin: 10px 0;
+}
+
+.site-item {
+  margin: 5px 0;
+}
+
+.blocking-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-items: center;
+  margin-top: 10px;
+}
+
+#block-mode {
+  flex: 1;
+  padding: 5px;
+}
+
+#block-time {
+  width: 50px;
+  padding: 5px;
+}
+
+.hidden {
+  display: none;
+}
+
+#save-blocking {
+  margin-top: 5px;
+  background-color: #2196F3;
 }
